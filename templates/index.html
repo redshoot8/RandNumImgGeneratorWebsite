@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAN Image Generator</title>
+    <link rel="stylesheet" href="templates/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Random Number Generator</h1>
+        <div>
+            <label for="number-input"></label><input type="text" id="number-input" placeholder="Enter a length of number">
+            <button onclick="generateNumber()">Generate Number Images</button>
+        </div>
+        <div id="image" class="image-container"></div>
+        <div id="number-images" class="image-container"></div>
+    </div>
+
+    <script>
+        async function generateNumber() {
+            const number = document.getElementById('number-input').value;
+            const response = await fetch('/generate_number', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ number })
+            });
+            const data = await response.json();
+            if (data.error) {
+                console.error('Error generating images:', data.error);
+            } else {
+                const container = document.getElementById('number-images');
+                container.innerHTML = '';
+                data.images.forEach(imgBase64 => {
+                    const img = new Image();
+                    img.src = 'data:image/png;base64,' + imgBase64;
+                    img.classList.add('scaled-img');
+                    container.appendChild(img);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
